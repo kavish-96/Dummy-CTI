@@ -75,7 +75,16 @@ function App() {
         }
       } else if (data.type === 'dial_call') {
         console.log("Click-to-call event received", data);
-        window.startOutboundCall(data.phone, data.contact_name);
+
+        setCurrentCall({
+          phone: data.phone,
+          customer_name: data.contact_name
+        });
+
+        window.startOutboundCall(
+          data.phone,
+          data.contact_name
+        );
       }
     };
 
@@ -215,8 +224,13 @@ function App() {
             <div className="call-info">
               {callStatus === 'outbound_calling' ? (
                 <>
-                  <h2 className="customer-name">Calling...</h2>
-                  <p className="phone-number">{currentCall?.phone}</p>
+                  <h2 className="customer-name">
+                    {currentCall?.customer_name || 'Calling...'}
+                  </h2>
+
+                  <p className="phone-number">
+                    {currentCall?.phone}
+                  </p>
                 </>
               ) : (
                 <>
