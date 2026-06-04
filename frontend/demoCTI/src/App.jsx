@@ -48,10 +48,10 @@ function App() {
         });
 
         // Automatically open matching contact in ServiceNow
-        if (data.contact_sys_id) {
-          window.parent.location.href =
-            `/customer_contact.do?sys_id=${data.contact_sys_id}`;
-        }
+        // if (data.contact_sys_id) {
+        //   window.parent.location.href =
+        //     `/customer_contact.do?sys_id=${data.contact_sys_id}`;
+        // }
 
         // Existing postMessage
         window.parent.postMessage(
