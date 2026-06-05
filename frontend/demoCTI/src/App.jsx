@@ -38,6 +38,19 @@ function App() {
 
       if (data.type === 'incoming_call') {
 
+        console.log("SELF:", window.location.href);
+
+        try {
+          console.log("PARENT:", window.parent.location.href);
+        } catch (e) {
+          console.log("Cannot read parent");
+        }
+
+        try {
+          console.log("TOP:", window.top.location.href);
+        } catch (e) {
+          console.log("Cannot read top");
+        }
         // Update UI state
         setCallStatus('incoming');
 
@@ -46,6 +59,8 @@ function App() {
           phone: data.phone,
           ticket_id: data.ticket_id
         });
+
+
 
         // Automatically open matching contact in ServiceNow
         // if (data.contact_sys_id) {
