@@ -11,6 +11,10 @@ function App() {
 
   const timerRef = useRef(null);
 
+  useEffect(() => {
+    console.log("openFrameAPI:", window.openFrameAPI);
+  }, []);
+
   // Expose global function for Future CRM Integration
   useEffect(() => {
     window.startOutboundCall = (phone, contact_name) => {
