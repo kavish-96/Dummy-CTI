@@ -11,37 +11,6 @@ function App() {
 
   const timerRef = useRef(null);
 
-  const lookupContact = async (phone) => {
-    try {
-      const response = await fetch(
-        "https://dev199342.service-now.com/api/2062050/opto_cti/contact_lookup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            phone: phone
-          })
-        }
-      );
-
-      const data = await response.json();
-
-      console.log("Lookup Result:", data);
-
-      return data.result;
-
-    } catch (error) {
-      console.error("Lookup Error:", error);
-      return null;
-    }
-  };
-
-  useEffect(() => {
-    console.log("openFrameAPI:", window.openFrameAPI);
-  }, []);
-
   // Expose global function for Future CRM Integration
   useEffect(() => {
     window.startOutboundCall = (phone, contact_name) => {
@@ -69,19 +38,6 @@ function App() {
 
       if (data.type === 'incoming_call') {
 
-        console.log("SELF:", window.location.href);
-
-        try {
-          console.log("PARENT:", window.parent.location.href);
-        } catch (e) {
-          console.log("Cannot read parent");
-        }
-
-        try {
-          console.log("TOP:", window.top.location.href);
-        } catch (e) {
-          console.log("Cannot read top");
-        }
         // Update UI state
         setCallStatus('incoming');
 
@@ -105,25 +61,6 @@ function App() {
             console.error("Screen pop failed", err);
           }
         }
-
-
-        // Automatically open matching contact in ServiceNow
-        // if (data.contact_sys_id) {
-        //   window.parent.location.href =
-        //     `/customer_contact.do?sys_id=${data.contact_sys_id}`;
-        // }
-
-        // Existing postMessage
-        // window.parent.postMessage(
-        //   {
-        //     type: 'incoming_call',
-        //     customer_name: data.customer_name,
-        //     phone: data.phone,
-        //     ticket_id: data.ticket_id
-        //   },
-        //   '*'
-        // );
-
 
         window.postMessage(
           {
@@ -302,14 +239,6 @@ function App() {
                   <button className="btn btn-call" onClick={handleInitiateCall}>Call</button>
                   <button className="btn btn-backspace" onClick={handleDialBackspace}>⌫</button>
                   <button className="btn btn-clear-dial" onClick={handleDialClear}>Clear</button>
-                  <button
-                    onClick={async () => {
-                      const result = await lookupContact("+91 99999 99999");
-                      console.log(result);
-                    }}
-                  >
-                    Test Lookup
-                  </button>
                 </div>
               </div>
             </div>
