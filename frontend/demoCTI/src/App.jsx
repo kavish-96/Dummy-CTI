@@ -11,6 +11,33 @@ function App() {
 
   const timerRef = useRef(null);
 
+  const lookupContact = async (phone) => {
+    try {
+      const response = await fetch(
+        "https://dev199342.service-now.com/api/2062050/opto_cti/contact_lookup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            phone: phone
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      console.log("Lookup Result:", data);
+
+      return data.result;
+
+    } catch (error) {
+      console.error("Lookup Error:", error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     console.log("openFrameAPI:", window.openFrameAPI);
   }, []);
@@ -261,6 +288,14 @@ function App() {
                   <button className="btn btn-call" onClick={handleInitiateCall}>Call</button>
                   <button className="btn btn-backspace" onClick={handleDialBackspace}>⌫</button>
                   <button className="btn btn-clear-dial" onClick={handleDialClear}>Clear</button>
+                  <button
+                    onClick={async () => {
+                      const result = await lookupContact("+91 99999 99999");
+                      console.log(result);
+                    }}
+                  >
+                    Test Lookup
+                  </button>
                 </div>
               </div>
             </div>
