@@ -92,6 +92,20 @@ function App() {
         });
 
 
+        if (
+          window.openFrameAPI &&
+          data.contact_sys_id
+        ) {
+          try {
+            window.openFrameAPI.openServiceNowForm({
+              entity: "customer_contact",
+              query: `sys_id=${data.contact_sys_id}`
+            });
+          } catch (err) {
+            console.error("Screen pop failed", err);
+          }
+        }
+
 
         // Automatically open matching contact in ServiceNow
         // if (data.contact_sys_id) {
