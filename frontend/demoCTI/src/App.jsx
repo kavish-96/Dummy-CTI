@@ -38,7 +38,12 @@ function App() {
         "BUILD CHECK v7",
         new Date().toISOString()
       );
-      console.log("Incoming data:", data);
+      console.log(
+        "Incoming data:",
+        data,
+        "BUILD:",
+        data.build
+      );
 
       if (data.type === 'incoming_call') {
 

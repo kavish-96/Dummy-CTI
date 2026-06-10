@@ -137,6 +137,7 @@ async def incoming_call(data: CallData):
 
     message = {
         "type": "incoming_call",
+        "build": "render-test-v99",
         "customer_name": data.customer_name,
         "phone": data.phone,
         "ticket_id": data.ticket_id,
