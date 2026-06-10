@@ -54,11 +54,12 @@ function App() {
         ) {
           try {
             window.openFrameAPI.openServiceNowForm({
+
               entity: "customer_contact",
               query: `sys_id=${data.contact_sys_id}`
             });
           } catch (err) {
-            console.error("Screen pop failed", err);
+            console.error("SCREEN POP ERROR", err);
           }
         }
 

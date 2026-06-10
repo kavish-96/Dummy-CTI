@@ -43,6 +43,7 @@ connected_clients: list[WebSocket] = []
 
 def lookup_servicenow_contact(phone: str):
     try:
+        print("Searching phone:", phone)
         response = requests.get(
             f"{SERVICENOW_INSTANCE}/api/now/table/customer_contact",
             auth=(SERVICENOW_USERNAME, SERVICENOW_PASSWORD),
@@ -55,7 +56,14 @@ def lookup_servicenow_contact(phone: str):
 
         response.raise_for_status()
 
-        results = response.json().get("result", [])
+        response_json = response.json()
+
+        # print("SERVICENOW RESPONSE:")
+        # print(response_json)
+
+        results = response_json.get("result", [])
+
+        # results = response.json().get("result", [])
 
         if results:
             print(
@@ -136,6 +144,7 @@ async def incoming_call(data: CallData):
     }
     
     # Broadcast to all connected clients
+
     for client in connected_clients:
         try:
             await client.send_text(json.dumps(message))
