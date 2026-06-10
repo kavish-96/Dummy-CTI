@@ -61,8 +61,9 @@ function App() {
             console.error("Screen pop failed", err);
           }
         }
+        console.log("Sending TEST message");
 
-        window.postMessage(
+        window.parent.postMessage(
           {
             type: "incoming_call",
             phone: data.phone,
