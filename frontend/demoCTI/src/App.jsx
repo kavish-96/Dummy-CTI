@@ -62,31 +62,6 @@ function App() {
           }
         }
 
-        console.log("Sending TEST message");
-
-        window.postMessage(
-          {
-            type: "incoming_call",
-            phone: data.phone,
-            customer_name: data.customer_name,
-            ticket_id: data.ticket_id
-          },
-          "*"
-        );
-
-        window.parent.parent?.postMessage(
-          {
-            type: 'incoming_call',
-            customer_name: data.customer_name,
-            phone: data.phone,
-            ticket_id: data.ticket_id
-          },
-          '*'
-        );
-
-        console.log("Message sent to parent");
-        console.log("Message sent to parent.parent");
-
       } else if (data.type === 'outbound_call_started') {
         setCallStatus('outbound_calling');
         setCurrentCall(prev => ({

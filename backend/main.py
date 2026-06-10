@@ -2,6 +2,18 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import json
+import requests
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from the .env file in the root directory
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env_path = os.path.join(parent_dir, '.env')
+load_dotenv(dotenv_path=env_path)
+
+SERVICENOW_INSTANCE = os.getenv("SERVICENOW_INSTANCE")
+SERVICENOW_USERNAME = os.getenv("SERVICENOW_USERNAME")
+SERVICENOW_PASSWORD = os.getenv("SERVICENOW_PASSWORD")
 
 app = FastAPI()
 
@@ -18,7 +30,7 @@ class CallData(BaseModel):
     customer_name: str
     phone: str
     ticket_id: str
-    contact_sys_id: str
+    # contact_sys_id: str
 
 class ClickToCallData(BaseModel):
     phone: str
@@ -27,6 +39,39 @@ class ClickToCallData(BaseModel):
 
 # Store connected clients
 connected_clients: list[WebSocket] = []
+
+
+def lookup_servicenow_contact(phone: str):
+    try:
+        response = requests.get(
+            f"{SERVICENOW_INSTANCE}/api/now/table/customer_contact",
+            auth=(SERVICENOW_USERNAME, SERVICENOW_PASSWORD),
+            params={
+                "sysparm_query": f"mobile_phone={phone}",
+                "sysparm_fields": "sys_id,name,mobile_phone",
+                "sysparm_limit": "1"
+            }
+        )
+
+        response.raise_for_status()
+
+        results = response.json().get("result", [])
+
+        if results:
+            print(
+                f"ServiceNow match found: "
+                f"{results[0]['name']} "
+                f"({results[0]['sys_id']})"
+            )
+            return results[0]["sys_id"]
+
+        print(f"No ServiceNow contact found for {phone}")
+        return None
+
+    except Exception as e:
+        print("ServiceNow lookup failed:", e)
+        return None
+
 
 @app.get("/")
 async def health_check():
@@ -78,12 +123,16 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.post("/incoming-call")
 async def incoming_call(data: CallData):
     """Incoming Call API"""
+    contact_sys_id = lookup_servicenow_contact(
+        data.phone
+    )
+
     message = {
         "type": "incoming_call",
         "customer_name": data.customer_name,
         "phone": data.phone,
         "ticket_id": data.ticket_id,
-        "contact_sys_id": data.contact_sys_id
+        "contact_sys_id": contact_sys_id
     }
     
     # Broadcast to all connected clients
