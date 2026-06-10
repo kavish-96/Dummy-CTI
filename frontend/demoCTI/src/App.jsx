@@ -34,6 +34,10 @@ function App() {
   useEffect(() => {
     const handleMessage = (data) => {
 
+      console.log(
+        "BUILD CHECK v7",
+        new Date().toISOString()
+      );
       console.log("Incoming data:", data);
 
       if (data.type === 'incoming_call') {
