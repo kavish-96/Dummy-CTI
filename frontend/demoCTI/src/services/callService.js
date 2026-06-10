@@ -7,7 +7,6 @@ class CallService {
   connect(onMessageCallback) {
     this.onMessage = onMessageCallback;
     this.ws = new WebSocket('wss://dummy-cti.onrender.com/ws');
-    // this.ws = new WebSocket('ws://localhost:8000/ws');
 
     this.ws.onopen = () => {
       console.log('WebSocket Connected');

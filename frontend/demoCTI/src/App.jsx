@@ -53,11 +53,30 @@ function App() {
           data.contact_sys_id
         ) {
           try {
-            window.openFrameAPI.openServiceNowForm({
+            console.log("SCREEN POP ATTEMPT", data.contact_sys_id);
+            console.log(
+              "openFrameAPI object",
+              window.openFrameAPI
+            );
 
+            console.log(
+              "openServiceNowForm",
+              window.openFrameAPI.openServiceNowForm
+            );
+
+            window.openFrameAPI.openServiceNowForm({
               entity: "customer_contact",
               query: `sys_id=${data.contact_sys_id}`
-            });
+            }).then(
+              (result) => {
+                console.log("SCREEN POP SUCCESS", result);
+              }
+            ).catch(
+              (err) => {
+                console.error("SCREEN POP FAILED", err);
+              }
+            );
+
           } catch (err) {
             console.error("SCREEN POP ERROR", err);
           }
