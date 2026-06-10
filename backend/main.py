@@ -18,7 +18,7 @@ class CallData(BaseModel):
     customer_name: str
     phone: str
     ticket_id: str
-    # contact_sys_id: str
+    contact_sys_id: str
 
 class ClickToCallData(BaseModel):
     phone: str
@@ -83,7 +83,7 @@ async def incoming_call(data: CallData):
         "customer_name": data.customer_name,
         "phone": data.phone,
         "ticket_id": data.ticket_id,
-        # "contact_sys_id": data.contact_sys_id
+        "contact_sys_id": data.contact_sys_id
     }
     
     # Broadcast to all connected clients
