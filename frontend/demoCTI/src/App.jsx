@@ -63,7 +63,7 @@ function App() {
         }
         console.log("Sending TEST message");
 
-        window.parent.postMessage(
+        window.postMessage(
           {
             type: "incoming_call",
             phone: data.phone,
