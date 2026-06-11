@@ -64,6 +64,9 @@ def lookup_servicenow_contact(phone: str):
 
         # print("SERVICENOW RESPONSE:")
         # print(response_json)
+        print("INSTANCE:", SERVICENOW_INSTANCE)
+        print("HTTP STATUS:", response.status_code)
+        print("BODY:", response.text)
 
         results = response_json.get("result", [])
 
