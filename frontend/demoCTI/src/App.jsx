@@ -68,15 +68,15 @@ function App() {
             "*"
           );
 
-          window.parent.parent.postMessage(
-            {
-              type: "incoming_call",
-              phone: data.phone,
-              customer_name: data.customer_name,
-              ticket_id: data.ticket_id
-            },
-            "*"
-          );
+          // window.parent.parent.postMessage(
+          //   {
+          //     type: "incoming_call",
+          //     phone: data.phone,
+          //     customer_name: data.customer_name,
+          //     ticket_id: data.ticket_id
+          //   },
+          //   "*"
+          // );
 
           console.log("Salesforce message sent");
 
