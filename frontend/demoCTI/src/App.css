@@ -9,22 +9,24 @@
 
 .cti-card {
   width: 100%;
-  max-width: 400px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 380px;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--border-light);
 }
 
 .cti-header {
-  background-color: #0056b3;
-  color: #ffffff;
+  background-color: var(--brand-primary);
+  color: var(--text-inverse);
   padding: 16px 20px;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
   text-align: center;
+  letter-spacing: 0.3px;
 }
 
 .cti-body {
@@ -34,37 +36,39 @@
   gap: 16px;
 }
 
+/* Status Badges */
 .status-badge {
   display: inline-block;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   align-self: center;
   margin-bottom: 8px;
 }
 
 .status-idle {
-  background-color: #e9ecef;
-  color: #495057;
+  background-color: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
 }
 
 .status-incoming {
-  background-color: #fff3cd;
-  color: #856404;
+  background-color: #fef3c7;
+  color: #92400e;
   animation: pulse 1.5s infinite;
 }
 
 .status-connected {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
 .status-outbound_calling {
-  background-color: #cce5ff;
-  color: #004085;
+  background-color: #e0f2fe;
+  color: #075985;
   animation: pulse 1.5s infinite;
 }
 
@@ -74,82 +78,107 @@
   100% { opacity: 1; }
 }
 
+/* Call Info Typography */
 .call-info {
   text-align: center;
   margin-bottom: 16px;
+  padding: 16px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--border-light);
 }
 
 .customer-name {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 600;
-  margin: 0 0 8px;
-  color: #212529;
+  margin: 0 0 4px;
+  color: var(--text-primary);
 }
 
 .phone-number {
-  font-size: 1rem;
-  color: #6c757d;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .ticket-id {
-  font-size: 0.875rem;
-  color: #0056b3;
-  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--action-info);
+  margin-top: 6px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
 .timer {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #dc3545;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--action-neutral);
   text-align: center;
-  margin: 8px 0;
+  margin: 8px 0 16px;
+  font-variant-numeric: tabular-nums;
 }
 
+/* Actions Grid */
 .cti-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
+/* Base Button */
 .btn {
   padding: 12px;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: var(--radius-btn);
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s ease;
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
-.btn:hover {
-  opacity: 0.9;
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
-.btn-accept {
-  background-color: #28a745;
+.btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Action Specific Buttons */
+.btn-accept, .btn-call {
+  background-color: var(--action-call);
 }
 
 .btn-reject {
-  background-color: #dc3545;
+  background-color: var(--action-end);
 }
 
 .btn-end {
-  background-color: #dc3545;
+  background-color: var(--action-end);
   grid-column: span 2;
 }
 
 .btn-clear {
-  background-color: #6c757d;
+  background-color: var(--action-neutral);
   grid-column: span 2;
 }
 
-.idle-text {
-  text-align: center;
-  color: #6c757d;
-  font-size: 1.1rem;
-  padding: 40px 0;
+/* Small Buttons (SDK Controls) */
+.btn-sm {
+  font-size: 0.8rem;
+  padding: 8px;
+  border-radius: 8px;
 }
 
 /* Dial Pad UI Styles */
@@ -158,70 +187,247 @@
   flex-direction: column;
 }
 
-.dial-display {
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 12px 16px;
+.dial-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-btn);
+  padding: 16px;
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
-  min-height: 54px;
-  margin-bottom: 16px;
-  color: #212529;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-bottom: 24px;
+  color: var(--text-primary);
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-inner);
+  font-family: inherit;
+  letter-spacing: 1px;
 }
 
-.dial-display .placeholder {
-  color: #adb5bd;
+.dial-input:focus {
+  border-color: var(--action-info);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+}
+
+.dial-input::placeholder {
+  color: #9ca3af;
   font-weight: 400;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
+  letter-spacing: normal;
 }
 
+/* Circular Dial Pad with 3D tactile feel */
 .dial-pad {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 16px 24px;
+  justify-items: center;
+  padding: 0 10px;
 }
 
 .dial-btn {
-  background: #f1f3f5;
-  border: none;
-  border-radius: 8px;
-  padding: 16px;
-  font-size: 1.25rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-circle);
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
-  color: #495057;
+  color: var(--text-primary);
+  font-family: inherit;
+  /* 3D depth shadow */
+  box-shadow: 0 4px 0 #cbd5e1, 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.05s ease, box-shadow 0.05s ease, background-color 0.1s ease;
+  position: relative;
+  outline: none;
 }
 
 .dial-btn:hover {
-  background: #e2e6ea;
+  background: var(--bg-surface-hover);
+  border-color: #cbd5e1;
 }
 
+.dial-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #cbd5e1, 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Dial Actions Row with 3D tactile feel */
 .dial-actions {
-  display: flex;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
   grid-column: span 3;
-  margin-top: 4px;
+  margin-top: 16px;
+  width: 100%;
 }
 
 .dial-actions .btn {
-  flex: 1;
+  padding: 14px 0;
+  border-radius: 24px; /* Pill shape for bottom actions */
+  border: none;
+  font-weight: 700;
+  position: relative;
+  transition: transform 0.05s ease, box-shadow 0.05s ease, filter 0.1s ease;
 }
 
-.btn-call {
-  background-color: #28a745;
+.dial-actions .btn:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow: inherit;
 }
 
-.btn-backspace {
-  background-color: #ffc107;
-  color: #212529;
+.dial-actions .btn:active:not(:disabled) {
+  transform: translateY(3px);
 }
 
-.btn-clear-dial {
-  background-color: #6c757d;
+.dial-actions .btn-call {
+  background-color: var(--action-call);
+  box-shadow: 0 4px 0 #047857, 0 4px 8px rgba(5, 150, 105, 0.15);
+}
+
+.dial-actions .btn-call:active:not(:disabled) {
+  box-shadow: 0 1px 0 #047857, 0 1px 3px rgba(5, 150, 105, 0.1);
+}
+
+.dial-actions .btn-backspace {
+  background-color: var(--action-warn);
+  box-shadow: 0 4px 0 #b45309, 0 4px 8px rgba(217, 119, 6, 0.15);
+}
+
+.dial-actions .btn-backspace:active:not(:disabled) {
+  box-shadow: 0 1px 0 #b45309, 0 1px 3px rgba(217, 119, 6, 0.1);
+}
+
+.dial-actions .btn-clear-dial {
+  background-color: var(--action-neutral);
+  box-shadow: 0 4px 0 #475569, 0 4px 8px rgba(100, 116, 139, 0.15);
+}
+
+.dial-actions .btn-clear-dial:active:not(:disabled) {
+  box-shadow: 0 1px 0 #475569, 0 1px 3px rgba(100, 116, 139, 0.1);
+}
+
+/* SDK Controls Panel */
+.sdk-controls-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-btn);
+  padding: 14px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sdk-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sdk-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
+}
+
+.sdk-controls-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Secondary flat outline button style for SDK controls */
+.btn-sdk-control {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 2px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  outline: none;
+}
+
+.btn-sdk-control:hover:not(:disabled) {
+  background-color: var(--bg-surface-hover);
+  border-color: #cbd5e1;
+}
+
+.btn-sdk-control:active:not(:disabled) {
+  background-color: #e2e8f0;
+  transform: scale(0.97);
+}
+
+.btn-sdk-control:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background-color: var(--bg-surface);
+  border-color: var(--border-light);
+}
+
+
+/* Registration Styles */
+.registration-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+.sip-input {
+  padding: 14px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-btn);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.2s;
+  background: var(--bg-surface);
+  font-family: inherit;
+}
+
+.sip-input:focus {
+  border-color: var(--action-info);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+  background: var(--bg-card);
+}
+
+/* Agent Info Section */
+.agent-info-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-btn);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  line-height: 1.5;
+}
+
+.agent-info-section strong {
+  color: var(--text-primary);
+  font-weight: 600;
 }

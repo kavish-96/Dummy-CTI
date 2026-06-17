@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Siprtc Voice/Video Call Demo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Required meta tags -->
+  <!-- <script src="distribution/scripts.min.js"></script> -->
+  <link rel="stylesheet" href="dialer.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+</head>
+
+<body class="mb-5">
+  <div id="wrapper">
+    <div id="incomingCall" class="dNone">
+      <div class="callInfo">
+        <h3>Incoming Call</h3>
+        <p id="incomingCallNumber">Unknown</p>
+      </div>
+      <div id="answer"><i class="fa fa-phone"></i></div>
+      <div id="reject"><i class="fa fa-phone"></i></div>
+    </div>
+    <div id="callStatus" class="dNone">
+      <div class="callInfo">
+        <h3 id="callInfoText">Call info text goes here</h3>
+        <p id="callInfoNumber">Call info number goes here</p>
+      </div>
+      <div id="hangUp"><i class="fa fa-phone"></i>
+      </div>
+    </div>
+    <!---------TO FIELD--------------------------------------------------->
+    <!---------DIALPAD---------------------------------------------------->
+    <div id="inCallButtons" class="dNone">
+      <div id="dialPad">
+        <div class="dialpad-char" data-value="1" unselectable="on">1</div>
+        <div class="dialpad-char" data-value="2" unselectable="on">2</div>
+        <div class="dialpad-char" data-value="3" unselectable="on">3</div>
+        <div class="dialpad-char" data-value="4" unselectable="on">4</div>
+        <div class="dialpad-char" data-value="5" unselectable="on">5</div>
+        <div class="dialpad-char" data-value="6" unselectable="on">6</div>
+        <div class="dialpad-char" data-value="7" unselectable="on">7</div>
+        <div class="dialpad-char" data-value="8" unselectable="on">8</div>
+        <div class="dialpad-char" data-value="9" unselectable="on">9</div>
+        <div class="dialpad-char" data-value="*" unselectable="on">*</div>
+        <div class="dialpad-char" data-value="0" unselectable="on">0</div>
+        <div class="dialpad-char" data-value="#" unselectable="on">#</div>
+      </div>
+      <div id="controlBtns">
+        <!-- mute/unmute start -->
+        <div id="muteAgent">
+          <i id="muteIcon" title="Mute" class="fa fa-microphone"></i>
+        </div>
+        <div id="unmuteAgent" class="dNone">
+          <i id="muteIcon" title="Mute" class="fa fa-microphone-slash"></i>
+        </div>
+        <!-- mute/unmute ends -->
+        <!-- hold/unhold start -->
+        <div id="hold">
+          <i id="holdIcon" title="Hold Icon" class="fa fa-phone"></i>
+        </div>
+        <div id="unhold">
+          <i id="unholdIcon" title="Unhold Icon" class="fa fa-phone-square"></i>
+        </div>
+        <!-- hold/unhold ends -->
+        <!-- start/stop recording start -->
+        <div id="startRecording">
+          <i id="startRecordingIcon" title="Start Recording" class="fa fa-headphones"></i>
+        </div>
+        <div id="stopRecording">
+          <i id="stopRecordingIcon" title="Stop Recording" class="fa fa-stop-circle"></i>
+        </div>
+        <!-- start/stop recording ends -->
+        <!-- pause/resume recording start -->
+        <div id="pauseRecording">
+          <i id="pauseRecordingIcon" title="Pause Recording" class="fa fa-pause-circle"></i>
+        </div>
+        <div id="resumeRecording">
+          <i id="resumeRecordingIcon" title="Resume Recording" class="fa fa-play-circle"></i>
+        </div>
+        <!-- pause/resume recording ends -->
+        <!-- add user start -->
+        <div id="addUser">
+          <i id="addUserIcon" title="Add User" class="fa fa-user-plus"></i>
+        </div>
+        <div id="muteSupervisor">
+          <i id="muteIcon" title="Mute Supervisor" class="fa fa-microphone"></i>
+        </div>
+        <div id="unMuteSupervisor">
+          <i id="muteIcon" title="Un mute Supervisor" class="fa fa-microphone"></i>
+        </div>
+        <!-- add user ends -->
+        <!-- transfer start -->
+        <div id="transfer">
+          <i id="transferIcon" title="Transfer" class="fa fa-exchange"></i>
+        </div>
+        <!-- transfer ends -->
+      </div>
+    </div>
+    <!---------USER CREDENTIALS-------------------------------------------->
+    <div id="userCredentials">
+      <div class="callInfo">
+        <h3 id="registerInfoText">Register User</h3>
+      </div>
+      <div id="username">
+        <input id="usernameField" type="text" placeholder="Enter SIP username"
+          value="sip:SIP1781071339415@phone.dev.r1.scb-global.com" />
+      </div>
+      <div id="password">
+        <input id="passwordField" type="password" placeholder="Password" value="Aneri@1234" />
+      </div>
+      <div id="registerUser"> <i class="fa fa-user"></i> </div>
+    </div>
+    <!---------DIAL CONTROLS-------------------------------------------->
+    <div id="callControl">
+      <div id="to">
+        <input id="toField" type="text" placeholder="Enter number here" value="+14794487016" />
+      </div>
+      <div id="to">
+        <input id="fromCallerID" type="text" placeholder="Caller ID" value="SIP1781071339415" />
+        <input id="outboundCallerID" type="text" placeholder="Outbound Caller ID" value="+18723201397" />
+      </div>
+      <div id="connectCall"> <i class="fa fa-phone"></i>
+      </div>
+      <div id="unregisterUser"> <i class="fa fa-user"></i>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="text-center errorMessage">
+    <h6 id="errorMessageId"></h6>
+  </div>
+
+  <div class="dFlex">
+    <div class="f20W500">Agent State &nbsp;&nbsp;&nbsp;</div>
+    <div id="showAgentState">State will be shown here</div>
+  </div>
+  <div class="dFlex">
+    <div class="f20W500">Ongoing call Info &nbsp;&nbsp;&nbsp;</div>
+    <div id="currentOngoingCallInfo">Dialer SDK WS Testing</div>
+  </div>
+  <div class="dFlex">
+    <div class="f20W500">Live Transcript &nbsp;&nbsp;&nbsp;</div>
+    <div id="transcription">Live Transcript will be shown here</div>
+  </div>
+
+  <div class="acceptRejectWrapper">
+    <h5 class="sectionTitle">Call controls etc. Action Center</h5>
+    <div class="actionBtnGroup">
+      <button id="getParticipants" class="btn btn-outline-primary">Get Participants List</button>
+      <button id="setAgentActivity" class="btn btn-outline-primary">Mark as Available</button>
+      <button id="IncreaseAgentWrapupTime" class="btn btn-outline-primary">Increase Wrap Up Time</button>
+      <button id="getAgentCurrentState" class="btn btn-outline-primary">Get Agent Current State</button>
+      <button id="callHold" class="btn btn-outline-primary">Call Hold</button>
+      <button id="callUnHold" class="btn btn-outline-primary">Call Un Hold</button>
+    </div>
+  </div>
+
+  <!-- remove participant from call start here-->
+  <div class="acceptRejectWrapper">
+    <h5 class="sectionTitle">Remove Participant from call Action Center</h5>
+    <div class="acceptRejectGrid">
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Participant Call SID</label>
+        <input id="removeParticipantCallSID" class="dialerInput" type="text" placeholder="Participant Call SID"
+          value="" />
+      </div>
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Teams DID</label>
+        <input id="removeParticipantTeamsDid" class="dialerInput" type="text" placeholder="Teams DID" value="" />
+      </div>
+    </div>
+    <div class="actionBtnGroup">
+      <div class="callCtrlBtn removeparticipantBtn" id="removeCallParticipant">Remove Call Participant</div>
+    </div>
+  </div>
+  <!-- remove participant from call ends here-->
+
+  <!-- transfer to queue and change task queue start from here -->
+  <div class="acceptRejectWrapper">
+    <h5 class="sectionTitle">Queue Transfer/Change Action Center</h5>
+    <div class="acceptRejectGrid">
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Task SID</label>
+        <input id="taskSID" class="dialerInput" type="text" placeholder="Task SID" value="" />
+      </div>
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Queue SID</label>
+        <input id="queueSid" class="dialerInput" type="text" placeholder="Queue SID" value="" />
+      </div>
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Task Channel</label>
+        <select id="taskChannel" class="dialerInput">
+          <option value="voice">Voice</option>
+          <option value="sms">SMS</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="email">Email</option>
+        </select>
+      </div>
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Conversation SID</label>
+        <input id="taskConversationSid" class="dialerInput" type="text" placeholder="Conversation SID" value="" />
+      </div>
+    </div>
+    <div class="actionBtnGroup">
+      <div id="queueTransfer" class="commonBtn queueTransferBtn">Queue Transfer</div>
+      <div id="changeTaskQueue" class="commonBtn queueTransferBtn">Change Task Queue</div>
+    </div>
+  </div>
+  <!-- transfer to queue and change task queue ends here -->
+
+  <!-- supervisor call control start from here -->
+  <div class="acceptRejectWrapper">
+    <h5 class="sectionTitle">Supervisor Voice interaction Action Center</h5>
+    <div class="acceptRejectGrid">
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Call Conf Friendly Name</label>
+        <input id="supervisorWorkerCallId" class="dialerInput" type="text" placeholder="Call Conf Id" value="" />
+      </div>
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Worker SID</label>
+        <input id="supervisorWorkerId" class="dialerInput" type="text" placeholder="Worker SID"
+          value="WK27476C21F3164FB98E8A2C5498436ADC" />
+      </div>
+    </div>
+    <div class="actionBtnGroup">
+      <div id="callBarge" class="commonBtn bargeBtn">Barge</div>
+      <div id="callWhishper" class="commonBtn whishperBtn">Whishper</div>
+      <div id="callMonitor" class="commonBtn monitorBtn">Monitor</div>
+      <div id="callTakeOver" class="commonBtn takeOverBtn">Take Over</div>
+      <div id="conversationTakeOver" class="commonBtn conversationTakeOverBtn">Conversation Take Over</div>
+    </div>
+  </div>
+  <!-- supervisor call control ends from here -->
+  <div class="dFlex">
+    <div id="sendEmail" class="commonBtn sendEmailChat">Send Email</div>
+    <div id="smsText">
+      <input id="customerEmail" class="dialerInput" type="text" placeholder="Enter email here"
+        value="hariom@o365.siprtc.io" />
+    </div>
+  </div>
+  <div class="dFlex">
+    <div id="sendPrivateMessage" class="commonBtn sendPrivateMessageChat">Send Private Message</div>
+    <div id="privatemsgText">
+      <input id="privateMessage" class="dialerInput" type="text" placeholder="Enter message here" value="Hello test" />
+    </div>
+  </div>
+  <div class="dFlex">
+    <div id="sendEmailReply" class="commonBtn sendEmailChatReply">Send Email Reply</div>
+    <input id="customerReplyEmail" class="dialerInput" type="text" placeholder="Enter email here"
+      value="hariom@o365.siprtc.io" />
+    <input id="emailMsgId" class="dialerInput" type="text" placeholder="Email Msg Id" value="" />
+  </div>
+  <div class="dFlex">
+    <div id="newEmailBody">--</div>
+  </div>
+
+  <div class="dFlex">
+    <div id="sendWhatsapp" class="commonBtn sendWhatsappChat">Whatsapp</div>
+    <input id="customerWhatsappNumber" class="dialerInput" type="text" placeholder="Email Customer Number"
+      value="918081415840" />
+    <input id="whatsappTextToSend" class="dialerInput" type="text" placeholder="Enter Customer Message"
+      value="Hello dear customer on whatsapp!" />
+    <div class="inputTextWrapper" id="whatsappMsg">--</div>
+  </div>
+  <div class="dFlex">
+    <div id="getWhtasappSessionChat" class="commonBtn getWhatsappSessionChats">Get Whtasapp Session Chat</div>
+    <div class="inputTextWrapper" id="smsText">--</div>
+  </div>
+  <div class="dFlex">
+    <div id="getWhtasappChatHistory" class="commonBtn getWhatsappChatsHistory">Get Whtasapp Chat History</div>
+    <div class="inputTextWrapper" id="smsText">--</div>
+  </div>
+  <div class="dFlex">
+    <div id="sendSms" class="commonBtn sendSmsChat">SMS</div>
+    <input id="customerSmsNumber" class="dialerInput" type="text" placeholder="Email Customer Number"
+      value="918081415840" />
+    <input id="smsTextToSend" class="dialerInput" type="text" placeholder="Enter Customer Message"
+      value="Hello dear customer on sms!" />
+    <div class="inputTextWrapper" id="smsText">--</div>
+  </div>
+
+  <!-- Non voice interaction action center start from here -->
+  <div class="acceptRejectWrapper">
+    <h5 class="sectionTitle">Non Voice interaction Action Center</h5>
+
+    <div class="acceptRejectGrid">
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Conversesion SID</label>
+        <input id="addedConversessionId" class="dialerInput" type="text" placeholder="Conversesion ID" value="" />
+      </div>
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Worker SID</label>
+        <input id="addedCoworkerWorkerId" class="dialerInput" type="text" placeholder="Worker ID" value="" />
+      </div>
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Supervisor Action</label>
+        <select id="intervenAction" class="dialerInput">
+          <option value="monitor">monitor</option>
+          <option value="barge-in">barge-in</option>
+          <option value="whisper">whisper</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actionBtnGroup">
+      <div id="supervisorIntervene" class="commonBtn addCoworkerInChat">Intervene</div>
+      <div id="addCoworkerInConversationr" class="commonBtn addCoworkerInChat">Add Agent</div>
+      <div id="removeCoworkerInConversationr" class="commonBtn addCoworkerInChat">Remove Agent</div>
+      <div id="transferConversationToCoworker" class="commonBtn addCoworkerInChat">Transfer</div>
+      <div id="getParticipantsInConversation" class="commonBtn addCoworkerInChat">Get Agents</div>
+      <div id="takeingoverConversation" class="commonBtn addCoworkerInChat">Take Over</div>
+    </div>
+  </div>
+  <!-- Non voice interaction action center ends here -->
+
+  <!-- warm transfer start -->
+  <div class="acceptRejectWrapper">
+    <h5 class="sectionTitle">Call Warm Transfer Action Center</h5>
+
+    <div class="acceptRejectGrid">
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Worker SID</label>
+        <input id="targetWorkerSid" class="dialerInput" type="text" placeholder="Worker ID"
+          value="WK27476C21F3164FB98E8A2C5498436ADC" />
+      </div>
+
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">SIP Username</label>
+        <input id="targetWorkerSipID" class="dialerInput" type="text" placeholder="SIP SID" value="SIP1781085146787" />
+      </div>
+    </div>
+
+    <div class="actionBtnGroup">
+      <div id="warmTransferConsultStart" class="commonBtn addCoworkerInChat">Warm Transfer Start</div>
+      <div id="warmTransferConsultEnd" class="commonBtn addCoworkerInChat">Warm Transfer End</div>
+      <div id="warmTransferConfirmAction" class="commonBtn addCoworkerInChat">Warm Transfer Confirm</div>
+    </div>
+  </div>
+  <!-- warm transfer ends -->
+
+  <!-- accept reject section start from here -->
+  <div class="acceptRejectWrapper">
+    <h5 class="sectionTitle">Incoming Task Action Center</h5>
+
+    <div class="acceptRejectGrid">
+      <div class="fieldGroup">
+        <label for="incomingTaskSid">Task SID(New)</label>
+        <input id="incomingTaskSid" class="dialerInput" type="text" placeholder="WTXXXXXXXX" />
+      </div>
+
+      <div class="fieldGroup">
+        <label for="reservationSid">Reservation SID(New)</label>
+        <input id="reservationSid" class="dialerInput" type="text" placeholder="RSXXXXXXXX" />
+      </div>
+
+      <div class="fieldGroup">
+        <label for="conversationId">Conversation ID(Added / Transfered)</label>
+        <input id="conversationId" class="dialerInput" type="text" placeholder="Conversation UUID" />
+      </div>
+
+      <div class="fieldGroup">
+        <label for="transferredBy">Transferred By(Transfered)</label>
+        <input id="transferredBy" class="dialerInput" type="text" placeholder="Worker ID (optional)" />
+      </div>
+
+      <div class="fieldGroup">
+        <label for="addedBy">Added By(New / Added / Transfered)</label>
+        <input id="addedBy" class="dialerInput" type="text" placeholder="Worker ID (optional)" />
+      </div>
+
+      <div class="fieldGroup">
+        <label for="reservationStatus">Action(New / Added / Transfered)</label>
+        <select id="reservationStatus" class="dialerInput">
+          <option value="accept">Accept</option>
+          <option value="reject">Decline</option>
+        </select>
+      </div>
+
+      <div class="fieldGroup">
+        <label for="incomingTaskVia">Task Type(Added / Transfered)</label>
+        <select id="incomingTaskVia" class="dialerInput">
+          <option value="new">New Task</option>
+          <option value="added">Added as Co‑worker</option>
+          <option value="transfered">Transferred Task</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actionBtnGroup">
+      <div id="acceptDeclineNew" class="commonBtn primaryBtn">New Task</div>
+      <div id="acceptDeclineAdded" class="commonBtn warningBtn">Added Task</div>
+      <div id="acceptDeclineTransfered" class="commonBtn dangerBtn">Transferred Task</div>
+    </div>
+  </div>
+  <!-- accept reject task section ends here -->
+
+  <!-- external transfer start -->
+  <div class="dFlex">
+    <div id="externalTansfer" class="commonBtn getSmsSessionChats">External Transfer</div>
+    <input id="externalContact" class="dialerInput" type="text" placeholder="External Transfer" value="+918081415840" />
+  </div>
+  <!-- external transfer ends -->
+
+  <!-- callback start -->
+  <div class="dFlex">
+    <div id="taskCallback" class="commonBtn taskCallback">Task Callback</div>
+    <input id="callBackId" class="dialerInput" type="text" placeholder="Enter Callback SID here" value="" />
+  </div>
+  <!-- callback ends -->
+
+  <div class="dFlex">
+    <div id="getSmsSessionChat" class="commonBtn getSmsSessionChats">Get Sms Session Chat</div>
+    <div id="smsText">--</div>
+  </div>
+  <div class="dFlex">
+    <div id="getSmsChatHistory" class="commonBtn getSmsChatsHistory">Get Sms Chat History</div>
+    <div id="smsText">--</div>
+  </div>
+</body>
+<!-- <script src="https://mystorageaccountsdk.blob.core.windows.net/websdk/v20260528110146/release/websdkrelease.js">… -->
+
+<script
+  src="https://mystorageaccountsdk.blob.core.windows.net/websdk/v20260318071601/release/websdkrelease.js"></script>
+<script src="dialer.js"></script>
+
+</html>
