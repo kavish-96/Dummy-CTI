@@ -88,6 +88,33 @@ def lookup_servicenow_contact(phone: str):
         return None
 
 
+def lookup_servicenow_incident(ticket_id: str):
+    try:
+        response = requests.get(
+            f"{SERVICENOW_INSTANCE}/api/now/table/incident",
+            auth=(SERVICENOW_USERNAME, SERVICENOW_PASSWORD),
+            params={
+                "sysparm_query": f"number={ticket_id}",
+                "sysparm_fields": "sys_id,number",
+                "sysparm_limit": "1"
+            }
+        )
+
+        response.raise_for_status()
+
+        results = response.json().get("result", [])
+
+        if results:
+            return results[0]["sys_id"]
+
+        return None
+
+    except Exception as e:
+        print("Incident lookup failed:", e)
+        return None
+
+
+
 @app.get("/")
 async def health_check():
     """Optional Health Check"""
@@ -138,8 +165,12 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.post("/incoming-call")
 async def incoming_call(data: CallData):
     """Incoming Call API"""
-    contact_sys_id = lookup_servicenow_contact(
-        data.phone
+    # contact_sys_id = lookup_servicenow_contact(
+    #     data.phone
+    # )
+
+    incident_sys_id = lookup_servicenow_incident(
+        data.ticket_id
     )
 
     message = {
@@ -148,7 +179,8 @@ async def incoming_call(data: CallData):
         "customer_name": data.customer_name,
         "phone": data.phone,
         "ticket_id": data.ticket_id,
-        "contact_sys_id": contact_sys_id
+        # "contact_sys_id": contact_sys_id
+        "incident_sys_id": incident_sys_id
     }
     
     # Broadcast to all connected clients

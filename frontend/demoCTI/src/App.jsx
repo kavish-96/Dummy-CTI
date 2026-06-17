@@ -160,16 +160,6 @@ function App() {
             "*"
           );
 
-          // window.parent.parent.postMessage(
-          //   {
-          //     type: "incoming_call",
-          //     phone: data.phone,
-          //     customer_name: data.customer_name,
-          //     ticket_id: data.ticket_id
-          //   },
-          //   "*"
-          // );
-
           console.log("Salesforce message sent");
 
         } catch (e) {
@@ -179,10 +169,13 @@ function App() {
 
         if (
           window.openFrameAPI &&
-          data.contact_sys_id
+          data.incident_sys_id
+          // data.contact_sys_id
         ) {
           try {
-            console.log("SCREEN POP ATTEMPT", data.contact_sys_id);
+            // console.log("SCREEN POP ATTEMPT", data.contact_sys_id);
+
+            console.log("SCREEN POP ATTEMPT", data.incident_sys_id);
             console.log(
               "openFrameAPI object",
               window.openFrameAPI
@@ -194,8 +187,11 @@ function App() {
             );
 
             window.openFrameAPI.openServiceNowForm({
-              entity: "customer_contact",
-              query: `sys_id=${data.contact_sys_id}`
+              // entity: "customer_contact",
+              // query: `sys_id=${data.contact_sys_id}`
+              entity: "customer_incident",
+              query: `sys_id=${data.incident_sys_id}`
+
             });
 
             console.log("openServiceNowForm called");
