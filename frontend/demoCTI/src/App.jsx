@@ -189,7 +189,7 @@ function App() {
             window.openFrameAPI.openServiceNowForm({
               // entity: "customer_contact",
               // query: `sys_id=${data.contact_sys_id}`
-              entity: "customer_incident",
+              entity: "incident",
               query: `sys_id=${data.incident_sys_id}`
 
             });
