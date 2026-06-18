@@ -260,10 +260,22 @@ function App() {
           customer_name: data.contact_name
         });
 
-        window.startOutboundCall(
-          data.phone,
-          data.contact_name
-        );
+        setTimeout(() => {
+          console.log(
+            "Starting outbound call after CTI opened"
+          );
+
+          console.log(
+            "Registration status:",
+            registrationStatus
+          );
+
+          window.startOutboundCall(
+            data.phone,
+            data.contact_name
+          );
+
+        }, 1000);
       }
     };
 
