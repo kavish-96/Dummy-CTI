@@ -275,7 +275,7 @@ function App() {
             data.contact_name
           );
 
-        }, 1000);
+        }, 100);
       }
     };
 
