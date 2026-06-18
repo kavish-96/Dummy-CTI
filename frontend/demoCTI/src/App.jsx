@@ -255,6 +255,8 @@ function App() {
 
         }
 
+        setCallStatus('outbound_calling');
+
         setCurrentCall({
           phone: data.phone,
           customer_name: data.contact_name
@@ -274,8 +276,8 @@ function App() {
         //     data.phone,
         //     data.contact_name
         //   );
+        // }, 1000);
 
-        // }, 100);
         window.startOutboundCall(
           data.phone,
           data.contact_name
