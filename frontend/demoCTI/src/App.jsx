@@ -238,6 +238,23 @@ function App() {
       } else if (data.type === 'dial_call') {
         console.log("Click-to-call event received", data);
 
+        try {
+
+          if (window.openFrameAPI) {
+
+            window.openFrameAPI.show();
+
+          }
+
+        } catch (err) {
+
+          console.error(
+            "Failed to open CTI",
+            err
+          );
+
+        }
+
         setCurrentCall({
           phone: data.phone,
           customer_name: data.contact_name
