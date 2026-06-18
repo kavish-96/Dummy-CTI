@@ -1,13 +1,20 @@
 /* CTI Card Layout Styles */
-.cti-container {
+/* .cti-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: 20px;
+} */
+
+.cti-container {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
 }
 
-.cti-card {
+/* .cti-card {
   width: 100%;
   max-width: 380px;
   background-color: var(--bg-card);
@@ -17,6 +24,16 @@
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border-light);
+} */
+
+.cti-card {
+  width: 100%;
+  height: 100%;
+  background: white;
+
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
 }
 
 .cti-header {
@@ -73,9 +90,17 @@
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.6; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Call Info Typography */
@@ -156,7 +181,8 @@
 }
 
 /* Action Specific Buttons */
-.btn-accept, .btn-call {
+.btn-accept,
+.btn-call {
   background-color: var(--action-call);
 }
 
@@ -270,7 +296,8 @@
 
 .dial-actions .btn {
   padding: 14px 0;
-  border-radius: 24px; /* Pill shape for bottom actions */
+  border-radius: 24px;
+  /* Pill shape for bottom actions */
   border: none;
   font-weight: 700;
   position: relative;

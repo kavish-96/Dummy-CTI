@@ -397,9 +397,6 @@ function App() {
   return (
     <div className="cti-container">
       <div className="cti-card">
-        <div className="cti-header">
-          Agent Softphone
-        </div>
 
         <div className="cti-body">
           <>
@@ -417,7 +414,7 @@ function App() {
                 <input
                   type="text"
                   className="dial-input"
-                  placeholder="Enter DID Number"
+                  placeholder="Enter Number"
                   value={dialNumber}
                   onChange={(e) => setDialNumber(e.target.value)}
                 />
