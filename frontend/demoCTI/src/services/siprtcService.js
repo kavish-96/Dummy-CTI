@@ -86,7 +86,7 @@ class SipRTCService {
     }
     console.log(`[SDK] Calling: ${destination}`);
     // Match reference dialer parameters: dest, callbackInit, fromCallerID, isVideo, outboundCallerID
-    const ret = this.client.Call(destination, this.handleSDKEvent.bind(this), "", true, "");
+    const ret = this.client.Call(destination, this.handleSDKEvent.bind(this), "", true, "12345");
     if (ret !== "success") {
       console.error("Call Failed", ret);
     }
