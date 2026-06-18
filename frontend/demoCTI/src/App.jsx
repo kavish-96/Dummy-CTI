@@ -137,6 +137,15 @@ function App() {
         data.build
       );
 
+      if (data.type === "screen_pop_incident") {
+
+        window.openFrameAPI.openServiceNowForm({
+          entity: "incident",
+          query: `sys_id=${data.incident_sys_id}`
+        });
+
+      }
+
       if (data.type === 'incoming_call') {
 
         // Update UI state

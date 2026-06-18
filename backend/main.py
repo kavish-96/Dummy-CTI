@@ -41,6 +41,9 @@ class ClickToCallData(BaseModel):
     contact_name: str | None = None
     source: str | None = None
 
+class ScreenPopIncidentData(BaseModel):
+    incident_id: str
+
 # Store connected clients
 connected_clients: list[WebSocket] = []
 
@@ -161,6 +164,42 @@ async def websocket_endpoint(websocket: WebSocket):
                 pass
     except WebSocketDisconnect:
         connected_clients.remove(websocket)
+
+
+@app.post("/screen-pop-incident")
+async def screen_pop_incident(
+    data: ScreenPopIncidentData
+):
+
+    incident_sys_id = lookup_servicenow_incident(
+        data.incident_id
+    )
+
+    if not incident_sys_id:
+        return {
+            "success": False,
+            "message": "Incident not found"
+        }
+
+    message = {
+        "type": "screen_pop_incident",
+        "incident_sys_id": incident_sys_id,
+        "incident_id": data.incident_id
+    }
+
+    for client in connected_clients:
+        try:
+            await client.send_text(
+                json.dumps(message)
+            )
+        except Exception:
+            pass
+
+    return {
+        "success": True,
+        "incident_id": data.incident_id
+    }
+
 
 @app.post("/incoming-call")
 async def incoming_call(data: CallData):
