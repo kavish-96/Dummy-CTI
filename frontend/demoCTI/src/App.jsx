@@ -16,26 +16,41 @@ function App() {
   // SIP Registration States
   // const [sipUsername, setSipUsername] = useState('');
   // const [sipPassword, setSipPassword] = useState('');
-  const [sipUsername, setSipUsername] =
-    useState('sip:SIP1781071339415@phone.dev.r1.scb-global.com');
-
-  const [sipPassword, setSipPassword] =
-    useState('Aneri@1234');
-  const [registrationStatus, setRegistrationStatus] = useState('unregistered');
+  // const [sipUsername, setSipUsername] = useState('sip:SIP1781071339415@phone.dev.r1.scb-global.com');
+  // const [sipPassword, setSipPassword] = useState('Aneri@1234');
+  const sipUsername = 'sip:SIP1781071339415@phone.dev.r1.scb-global.com';
+  const sipPassword = 'Aneri@1234';
+  const [registrationStatus, setRegistrationStatus] = useState('connecting');
 
   const timerRef = useRef(null);
 
   // Initialize SDK on mount
   useEffect(() => {
-    siprtcService.initializeSDK().then((success) => {
-      if (success) {
-        console.log('SipRTC initialization successful');
-      } else {
-        console.log('SipRTC initialization failed');
-      }
-    }).catch(err => {
-      console.error('Failed to initialize SDK', err);
-    });
+    siprtcService.initializeSDK()
+      .then((success) => {
+
+        if (!success) {
+          console.log("SDK initialization failed");
+          return;
+        }
+
+        console.log("SDK initialized");
+
+        setRegistrationStatus("connecting");
+
+        siprtcService.registerUser(
+          sipUsername,
+          sipPassword
+        );
+
+      })
+      .catch(err => {
+        console.error(
+          "Failed to initialize SDK",
+          err
+        );
+      });
+
   }, []);
 
   // Listen for SDK Registration Events
@@ -352,205 +367,167 @@ function App() {
         </div>
 
         <div className="cti-body">
-          {registrationStatus !== 'registered' ? (
-            <div className="registration-container">
-              <div className="status-badge status-idle" style={{ alignSelf: 'center', marginBottom: 16 }}>
-                Status: {
-                  registrationStatus === 'unregistered' ? 'Unregistered' :
-                    registrationStatus === 'connecting' ? 'Registering...' :
-                      registrationStatus === 'registration_failed' ? 'Registration Failed' :
-                        registrationStatus === 'connected' ? 'Connected (Registering...)' :
-                          registrationStatus === 'disconnected' ? 'Disconnected' : registrationStatus
-                }
-              </div>
-              <input
-                type="text"
-                className="sip-input"
-                placeholder="SIP Username"
-                value={sipUsername}
-                onChange={e => setSipUsername(e.target.value)}
-                disabled={registrationStatus === 'connecting' || registrationStatus === 'connected'}
-              />
-              <input
-                type="password"
-                className="sip-input"
-                placeholder="SIP Password"
-                value={sipPassword}
-                onChange={e => setSipPassword(e.target.value)}
-                disabled={registrationStatus === 'connecting' || registrationStatus === 'connected'}
-              />
-              <button
-                className="btn btn-call"
-                onClick={handleRegister}
-                disabled={registrationStatus === 'connecting' || registrationStatus === 'connected'}
-                style={{ marginTop: 8 }}
-              >
-                Register
-              </button>
+          <>
+            {/* Status Badge */}
+            <div className={`status-badge status-${callStatus}`}>
+              {callStatus === 'idle' && 'Idle'}
+              {callStatus === 'incoming' && 'Incoming Call'}
+              {callStatus === 'connected' && 'Connected'}
+              {callStatus === 'outbound_calling' && 'Calling...'}
             </div>
-          ) : (
-            <>
-              {/* Status Badge */}
-              <div className={`status-badge status-${callStatus}`}>
-                {callStatus === 'idle' && 'Idle'}
-                {callStatus === 'incoming' && 'Incoming Call'}
-                {callStatus === 'connected' && 'Connected'}
-                {callStatus === 'outbound_calling' && 'Calling...'}
-              </div>
 
-              {/* Call Information or Idle Text */}
-              {callStatus === 'idle' ? (
-                <div className="dial-container">
-                  <input
-                    type="text"
-                    className="dial-input"
-                    placeholder="Enter DID Number"
-                    value={dialNumber}
-                    onChange={(e) => setDialNumber(e.target.value)}
-                  />
-                  <div className="dial-pad">
-                    {['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'].map((digit) => (
-                      <button key={digit} className="dial-btn" onClick={() => handleDialClick(digit)}>
-                        {digit}
-                      </button>
-                    ))}
-                    <div className="dial-actions">
-                      <button className="btn btn-call" onClick={handleInitiateCall}>📞 Call</button>
-                      <button className="btn btn-backspace" onClick={handleDialBackspace}>⌫</button>
-                      <button className="btn btn-clear-dial" onClick={handleDialClear}>✕</button>
-                    </div>
+            {/* Call Information or Idle Text */}
+            {callStatus === 'idle' ? (
+              <div className="dial-container">
+                <input
+                  type="text"
+                  className="dial-input"
+                  placeholder="Enter DID Number"
+                  value={dialNumber}
+                  onChange={(e) => setDialNumber(e.target.value)}
+                />
+                <div className="dial-pad">
+                  {['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'].map((digit) => (
+                    <button key={digit} className="dial-btn" onClick={() => handleDialClick(digit)}>
+                      {digit}
+                    </button>
+                  ))}
+                  <div className="dial-actions">
+                    <button className="btn btn-call" onClick={handleInitiateCall}>📞 Call</button>
+                    <button className="btn btn-backspace" onClick={handleDialBackspace}>⌫</button>
+                    <button className="btn btn-clear-dial" onClick={handleDialClear}>✕</button>
                   </div>
                 </div>
-              ) : (
-                <div className="call-info">
-                  {callStatus === 'outbound_calling' ? (
-                    <>
-                      <h2 className="customer-name">
-                        {currentCall?.customer_name || 'Calling...'}
-                      </h2>
-
-                      <p className="phone-number">
-                        {currentCall?.phone}
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <h2 className="customer-name">{currentCall?.customer_name}</h2>
-                      <p className="phone-number">{currentCall?.phone}</p>
-                      {currentCall?.ticket_id && (
-                        <p className="ticket-id">Ticket: {currentCall.ticket_id}</p>
-                      )}
-                    </>
-                  )}
-                </div>
-              )}
-
-              {/* Timer */}
-              {(callStatus === 'connected') && (
-                <div className="timer">
-                  {formatTime(callDuration)}
-                </div>
-              )}
-
-              {/* Actions */}
-              <div className="cti-actions">
-                {callStatus === 'incoming' && (
+              </div>
+            ) : (
+              <div className="call-info">
+                {callStatus === 'outbound_calling' ? (
                   <>
-                    <button className="btn btn-accept" onClick={handleAccept}>Accept</button>
-                    <button className="btn btn-reject" onClick={handleReject}>Reject</button>
+                    <h2 className="customer-name">
+                      {currentCall?.customer_name || 'Calling...'}
+                    </h2>
+
+                    <p className="phone-number">
+                      {currentCall?.phone}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="customer-name">{currentCall?.customer_name}</h2>
+                    <p className="phone-number">{currentCall?.phone}</p>
+                    {currentCall?.ticket_id && (
+                      <p className="ticket-id">Ticket: {currentCall.ticket_id}</p>
+                    )}
                   </>
                 )}
-
-                {callStatus === 'connected' && (
-                  <button className="btn btn-end" onClick={handleEndCall}>End Call</button>
-                )}
-
-                {callStatus === 'outbound_calling' && (
-                  <button className="btn btn-end" onClick={handleEndOutboundCall}>End Call</button>
-                )}
-
-                {(callStatus === 'incoming' || callStatus === 'connected') && (
-                  <button className="btn btn-clear" onClick={handleClear}>Clear</button>
-                )}
               </div>
-              {/* SDK Controls Panel */}
-              <div className="sdk-controls-container">
-                <div className="sdk-section">
-                  <div className="sdk-section-title">Agent Utilities</div>
-                  <div className="sdk-controls-grid grid-3">
-                    <button
-                      className="btn-sdk-control"
-                      onClick={() => siprtcService.getAgentCurrentState()}
-                      disabled={registrationStatus !== 'registered'}
-                    >
-                      Get State
-                    </button>
-                    <button
-                      className="btn-sdk-control"
-                      onClick={() => siprtcService.markAvailable()}
-                      disabled={registrationStatus !== 'registered'}
-                    >
-                      Available
-                    </button>
-                    <button
-                      className="btn-sdk-control"
-                      onClick={() => siprtcService.increaseWrapupTime()}
-                      disabled={registrationStatus !== 'registered'}
-                    >
-                      + Wrapup
-                    </button>
-                  </div>
-                </div>
+            )}
 
-                <div className="sdk-section">
-                  <div className="sdk-section-title">Call Utilities</div>
-                  <div className="sdk-controls-grid grid-4">
-                    <button
-                      className="btn-sdk-control"
-                      onClick={() => siprtcService.hold()}
-                      disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
-                    >
-                      Hold
-                    </button>
-                    <button
-                      className="btn-sdk-control"
-                      onClick={() => siprtcService.unhold()}
-                      disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
-                    >
-                      Unhold
-                    </button>
-                    <button
-                      className="btn-sdk-control"
-                      onClick={() => siprtcService.mute()}
-                      disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
-                    >
-                      Mute
-                    </button>
-                    <button
-                      className="btn-sdk-control"
-                      onClick={() => siprtcService.unmute()}
-                      disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
-                    >
-                      Unmute
-                    </button>
-                  </div>
+            {/* Timer */}
+            {(callStatus === 'connected') && (
+              <div className="timer">
+                {formatTime(callDuration)}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="cti-actions">
+              {callStatus === 'incoming' && (
+                <>
+                  <button className="btn btn-accept" onClick={handleAccept}>Accept</button>
+                  <button className="btn btn-reject" onClick={handleReject}>Reject</button>
+                </>
+              )}
+
+              {callStatus === 'connected' && (
+                <button className="btn btn-end" onClick={handleEndCall}>End Call</button>
+              )}
+
+              {callStatus === 'outbound_calling' && (
+                <button className="btn btn-end" onClick={handleEndOutboundCall}>End Call</button>
+              )}
+
+              {(callStatus === 'incoming' || callStatus === 'connected') && (
+                <button className="btn btn-clear" onClick={handleClear}>Clear</button>
+              )}
+            </div>
+            {/* SDK Controls Panel */}
+            <div className="sdk-controls-container">
+              <div className="sdk-section">
+                <div className="sdk-section-title">Agent Utilities</div>
+                <div className="sdk-controls-grid grid-3">
+                  <button
+                    className="btn-sdk-control"
+                    onClick={() => siprtcService.getAgentCurrentState()}
+                    disabled={registrationStatus !== 'registered'}
+                  >
+                    Get State
+                  </button>
+                  <button
+                    className="btn-sdk-control"
+                    onClick={() => siprtcService.markAvailable()}
+                    disabled={registrationStatus !== 'registered'}
+                  >
+                    Available
+                  </button>
+                  <button
+                    className="btn-sdk-control"
+                    onClick={() => siprtcService.increaseWrapupTime()}
+                    disabled={registrationStatus !== 'registered'}
+                  >
+                    + Wrapup
+                  </button>
                 </div>
               </div>
 
-              {/* Agent and Call Info Section */}
-              <div className="agent-info-section">
-                <div style={{ marginBottom: '8px' }}>
-                  <strong>Agent State:</strong> {agentState || 'Unknown'}
-                </div>
-                <div style={{ marginBottom: '8px', wordBreak: 'break-all' }}>
-                  <strong>Ongoing Call Info:</strong> {ongoingCallInfo || 'None'}
-                </div>
-                <div>
-                  <strong>Live Transcript:</strong> {transcript || 'No live transcript available'}
+              <div className="sdk-section">
+                <div className="sdk-section-title">Call Utilities</div>
+                <div className="sdk-controls-grid grid-4">
+                  <button
+                    className="btn-sdk-control"
+                    onClick={() => siprtcService.hold()}
+                    disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
+                  >
+                    Hold
+                  </button>
+                  <button
+                    className="btn-sdk-control"
+                    onClick={() => siprtcService.unhold()}
+                    disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
+                  >
+                    Unhold
+                  </button>
+                  <button
+                    className="btn-sdk-control"
+                    onClick={() => siprtcService.mute()}
+                    disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
+                  >
+                    Mute
+                  </button>
+                  <button
+                    className="btn-sdk-control"
+                    onClick={() => siprtcService.unmute()}
+                    disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
+                  >
+                    Unmute
+                  </button>
                 </div>
               </div>
-            </>
-          )}
+            </div>
+
+            {/* Agent and Call Info Section */}
+            <div className="agent-info-section">
+              <div style={{ marginBottom: '8px' }}>
+                <strong>Agent State:</strong> {agentState || 'Unknown'}
+              </div>
+              <div style={{ marginBottom: '8px', wordBreak: 'break-all' }}>
+                <strong>Ongoing Call Info:</strong> {ongoingCallInfo || 'None'}
+              </div>
+              <div>
+                <strong>Live Transcript:</strong> {transcript || 'No live transcript available'}
+              </div>
+            </div>
+          </>
         </div>
       </div>
     </div>
