@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './App.css';
+
 import { callService } from './services/callService';
 import { siprtcService } from './services/siprtcService';
 
@@ -18,8 +18,8 @@ function App() {
   // const [sipPassword, setSipPassword] = useState('');
   // const [sipUsername, setSipUsername] = useState('sip:SIP1781071339415@phone.dev.r1.scb-global.com');
   // const [sipPassword, setSipPassword] = useState('Aneri@1234');
-  const sipUsername = 'sip:SIP1781071339415@phone.dev.r1.scb-global.com';
-  const sipPassword = 'Aneri@1234';
+  const sipUsername = 'sip:SIP1782131820832@phone.dev.r1.scb-global.com';
+  const sipPassword = '6975680373';
   const [registrationStatus, setRegistrationStatus] = useState('connecting');
 
   const timerRef = useRef(null);
@@ -395,13 +395,17 @@ function App() {
   };
 
   return (
-    <div className="cti-container">
-      <div className="cti-card">
+    <div className="w-full h-full p-0 m-0">
+      <div className="w-full h-full bg-white rounded-none shadow-none m-0">
 
-        <div className="cti-body">
+        <div className="p-6 flex flex-col gap-4">
           <>
             {/* Status Badge */}
-            <div className={`status-badge status-${callStatus}`}>
+            <div className={`inline-block px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider self-center mb-2 ${callStatus === 'idle' ? 'bg-gray-100 text-gray-500 border border-gray-200' :
+              callStatus === 'incoming' ? 'bg-yellow-100 text-yellow-800 animate-pulse' :
+                callStatus === 'connected' ? 'bg-emerald-100 text-emerald-800' :
+                  'bg-sky-100 text-sky-800 animate-pulse'
+              }`}>
               {callStatus === 'idle' && 'Idle'}
               {callStatus === 'incoming' && 'Incoming Call'}
               {callStatus === 'connected' && 'Connected'}
@@ -410,45 +414,45 @@ function App() {
 
             {/* Call Information or Idle Text */}
             {callStatus === 'idle' ? (
-              <div className="dial-container">
+              <div className="flex flex-col">
                 <input
                   type="text"
-                  className="dial-input"
+                  className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-2xl font-medium text-center mb-6 text-gray-800 w-full box-border outline-none transition-all duration-200 shadow-inner focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 placeholder-gray-400 tracking-wide"
                   placeholder="Enter Number"
                   value={dialNumber}
                   onChange={(e) => setDialNumber(e.target.value)}
                 />
-                <div className="dial-pad">
+                <div className="grid grid-cols-3 gap-y-4 gap-x-6 justify-items-center px-2.5">
                   {['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'].map((digit) => (
-                    <button key={digit} className="dial-btn" onClick={() => handleDialClick(digit)}>
+                    <button key={digit} className="bg-gray-50 border border-gray-200 rounded-full w-16 h-16 flex items-center justify-center text-2xl font-semibold cursor-pointer text-gray-800 shadow-[0_4px_0_#cbd5e1,0_4px_8px_rgba(0,0,0,0.05)] transition-all duration-[50ms] outline-none hover:bg-gray-100 hover:border-slate-300 active:translate-y-[3px] active:shadow-[0_1px_0_#cbd5e1,0_1px_3px_rgba(0,0,0,0.05)]" onClick={() => handleDialClick(digit)}>
                       {digit}
                     </button>
                   ))}
-                  <div className="dial-actions">
-                    <button className="btn btn-call" onClick={handleInitiateCall}>📞 Call</button>
-                    <button className="btn btn-backspace" onClick={handleDialBackspace}>⌫</button>
-                    <button className="btn btn-clear-dial" onClick={handleDialClear}>✕</button>
+                  <div className="grid grid-cols-3 gap-3 col-span-3 mt-4 w-full">
+                    <button className="py-3.5 px-0 rounded-full border-none font-bold relative transition-all duration-[50ms] text-white flex items-center justify-center gap-1.5 hover:brightness-105 active:translate-y-[3px] bg-emerald-600 shadow-[0_4px_0_#047857,0_4px_8px_rgba(5,150,105,0.15)] active:shadow-[0_1px_0_#047857,0_1px_3px_rgba(5,150,105,0.1)]" onClick={handleInitiateCall}>📞 Call</button>
+                    <button className="py-3.5 px-0 rounded-full border-none font-bold relative transition-all duration-[50ms] text-white flex items-center justify-center gap-1.5 hover:brightness-105 active:translate-y-[3px] bg-amber-600 shadow-[0_4px_0_#b45309,0_4px_8px_rgba(217,119,6,0.15)] active:shadow-[0_1px_0_#b45309,0_1px_3px_rgba(217,119,6,0.1)]" onClick={handleDialBackspace}>⌫</button>
+                    <button className="py-3.5 px-0 rounded-full border-none font-bold relative transition-all duration-[50ms] text-white flex items-center justify-center gap-1.5 hover:brightness-105 active:translate-y-[3px] bg-slate-600 shadow-[0_4px_0_#475569,0_4px_8px_rgba(100,116,139,0.15)] active:shadow-[0_1px_0_#475569,0_1px_3px_rgba(100,116,139,0.1)]" onClick={handleDialClear}>✕</button>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="call-info">
+              <div className="text-center mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 {callStatus === 'outbound_calling' ? (
                   <>
-                    <h2 className="customer-name">
+                    <h2 className="text-xl font-semibold m-0 mb-1 text-gray-800">
                       {currentCall?.customer_name || 'Calling...'}
                     </h2>
 
-                    <p className="phone-number">
+                    <p className="text-sm text-gray-500 m-0">
                       {currentCall?.phone}
                     </p>
                   </>
                 ) : (
                   <>
-                    <h2 className="customer-name">{currentCall?.customer_name}</h2>
-                    <p className="phone-number">{currentCall?.phone}</p>
+                    <h2 className="text-xl font-semibold m-0 mb-1 text-gray-800">{currentCall?.customer_name}</h2>
+                    <p className="text-sm text-gray-500 m-0">{currentCall?.phone}</p>
                     {currentCall?.ticket_id && (
-                      <p className="ticket-id">Ticket: {currentCall.ticket_id}</p>
+                      <p className="text-xs text-sky-600 mt-1.5 font-medium tracking-wide">Ticket: {currentCall.ticket_id}</p>
                     )}
                   </>
                 )}
@@ -457,53 +461,53 @@ function App() {
 
             {/* Timer */}
             {(callStatus === 'connected') && (
-              <div className="timer">
+              <div className="text-2xl font-medium text-slate-500 text-center my-2 mb-4 tabular-nums">
                 {formatTime(callDuration)}
               </div>
             )}
 
             {/* Actions */}
-            <div className="cti-actions">
+            <div className="grid grid-cols-2 gap-2.5">
               {callStatus === 'incoming' && (
                 <>
-                  <button className="btn btn-accept" onClick={handleAccept}>Accept</button>
-                  <button className="btn btn-reject" onClick={handleReject}>Reject</button>
+                  <button className="p-3 border-none rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 text-white flex items-center justify-center gap-1.5 hover:brightness-110 hover:shadow-md active:scale-95 bg-emerald-600" onClick={handleAccept}>Accept</button>
+                  <button className="p-3 border-none rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 text-white flex items-center justify-center gap-1.5 hover:brightness-110 hover:shadow-md active:scale-95 bg-red-600" onClick={handleReject}>Reject</button>
                 </>
               )}
 
               {callStatus === 'connected' && (
-                <button className="btn btn-end" onClick={handleEndCall}>End Call</button>
+                <button className="p-3 border-none rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 text-white flex items-center justify-center gap-1.5 hover:brightness-110 hover:shadow-md active:scale-95 bg-red-600 col-span-2" onClick={handleEndCall}>End Call</button>
               )}
 
               {callStatus === 'outbound_calling' && (
-                <button className="btn btn-end" onClick={handleEndOutboundCall}>End Call</button>
+                <button className="p-3 border-none rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 text-white flex items-center justify-center gap-1.5 hover:brightness-110 hover:shadow-md active:scale-95 bg-red-600 col-span-2" onClick={handleEndOutboundCall}>End Call</button>
               )}
 
               {(callStatus === 'incoming' || callStatus === 'connected') && (
-                <button className="btn btn-clear" onClick={handleClear}>Clear</button>
+                <button className="p-3 border-none rounded-lg text-sm font-semibold cursor-pointer transition-all duration-200 text-white flex items-center justify-center gap-1.5 hover:brightness-110 hover:shadow-md active:scale-95 bg-slate-500 col-span-2" onClick={handleClear}>Clear</button>
               )}
             </div>
             {/* SDK Controls Panel */}
-            <div className="sdk-controls-container">
-              <div className="sdk-section">
-                <div className="sdk-section-title">Agent Utilities</div>
-                <div className="sdk-controls-grid grid-3">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3.5 mt-2 flex flex-col gap-3.5">
+              <div className="flex flex-col gap-2">
+                <div className="text-[0.7rem] font-bold text-gray-500 uppercase tracking-wide mb-0.5">Agent Utilities</div>
+                <div className="grid grid-cols-3 gap-2">
                   <button
-                    className="btn-sdk-control"
+                    className="bg-white border border-gray-200 text-gray-800 text-xs font-semibold py-2 px-0.5 rounded-lg cursor-pointer transition-all duration-150 flex items-center justify-center outline-none hover:bg-gray-100 hover:border-slate-300 active:bg-slate-200 active:scale-95 disabled:opacity-45 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:border-gray-200"
                     onClick={() => siprtcService.getAgentCurrentState()}
                     disabled={registrationStatus !== 'registered'}
                   >
                     Get State
                   </button>
                   <button
-                    className="btn-sdk-control"
+                    className="bg-white border border-gray-200 text-gray-800 text-xs font-semibold py-2 px-0.5 rounded-lg cursor-pointer transition-all duration-150 flex items-center justify-center outline-none hover:bg-gray-100 hover:border-slate-300 active:bg-slate-200 active:scale-95 disabled:opacity-45 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:border-gray-200"
                     onClick={() => siprtcService.markAvailable()}
                     disabled={registrationStatus !== 'registered'}
                   >
                     Available
                   </button>
                   <button
-                    className="btn-sdk-control"
+                    className="bg-white border border-gray-200 text-gray-800 text-xs font-semibold py-2 px-0.5 rounded-lg cursor-pointer transition-all duration-150 flex items-center justify-center outline-none hover:bg-gray-100 hover:border-slate-300 active:bg-slate-200 active:scale-95 disabled:opacity-45 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:border-gray-200"
                     onClick={() => siprtcService.increaseWrapupTime()}
                     disabled={registrationStatus !== 'registered'}
                   >
@@ -512,32 +516,32 @@ function App() {
                 </div>
               </div>
 
-              <div className="sdk-section">
-                <div className="sdk-section-title">Call Utilities</div>
-                <div className="sdk-controls-grid grid-4">
+              <div className="flex flex-col gap-2">
+                <div className="text-[0.7rem] font-bold text-gray-500 uppercase tracking-wide mb-0.5">Call Utilities</div>
+                <div className="grid grid-cols-4 gap-2">
                   <button
-                    className="btn-sdk-control"
+                    className="bg-white border border-gray-200 text-gray-800 text-xs font-semibold py-2 px-0.5 rounded-lg cursor-pointer transition-all duration-150 flex items-center justify-center outline-none hover:bg-gray-100 hover:border-slate-300 active:bg-slate-200 active:scale-95 disabled:opacity-45 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:border-gray-200"
                     onClick={() => siprtcService.hold()}
                     disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
                   >
                     Hold
                   </button>
                   <button
-                    className="btn-sdk-control"
+                    className="bg-white border border-gray-200 text-gray-800 text-xs font-semibold py-2 px-0.5 rounded-lg cursor-pointer transition-all duration-150 flex items-center justify-center outline-none hover:bg-gray-100 hover:border-slate-300 active:bg-slate-200 active:scale-95 disabled:opacity-45 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:border-gray-200"
                     onClick={() => siprtcService.unhold()}
                     disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
                   >
                     Unhold
                   </button>
                   <button
-                    className="btn-sdk-control"
+                    className="bg-white border border-gray-200 text-gray-800 text-xs font-semibold py-2 px-0.5 rounded-lg cursor-pointer transition-all duration-150 flex items-center justify-center outline-none hover:bg-gray-100 hover:border-slate-300 active:bg-slate-200 active:scale-95 disabled:opacity-45 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:border-gray-200"
                     onClick={() => siprtcService.mute()}
                     disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
                   >
                     Mute
                   </button>
                   <button
-                    className="btn-sdk-control"
+                    className="bg-white border border-gray-200 text-gray-800 text-xs font-semibold py-2 px-0.5 rounded-lg cursor-pointer transition-all duration-150 flex items-center justify-center outline-none hover:bg-gray-100 hover:border-slate-300 active:bg-slate-200 active:scale-95 disabled:opacity-45 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:border-gray-200"
                     onClick={() => siprtcService.unmute()}
                     disabled={registrationStatus !== 'registered' || callStatus === 'idle'}
                   >
@@ -548,15 +552,15 @@ function App() {
             </div>
 
             {/* Agent and Call Info Section */}
-            <div className="agent-info-section">
-              <div style={{ marginBottom: '8px' }}>
-                <strong>Agent State:</strong> {agentState || 'Unknown'}
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg text-xs text-gray-500 border border-gray-200 leading-relaxed">
+              <div className="mb-2">
+                <strong className="text-gray-800 font-semibold">Agent State:</strong> {agentState || 'Unknown'}
               </div>
-              <div style={{ marginBottom: '8px', wordBreak: 'break-all' }}>
-                <strong>Ongoing Call Info:</strong> {ongoingCallInfo || 'None'}
+              <div className="mb-2 break-all">
+                <strong className="text-gray-800 font-semibold">Ongoing Call Info:</strong> {ongoingCallInfo || 'None'}
               </div>
               <div>
-                <strong>Live Transcript:</strong> {transcript || 'No live transcript available'}
+                <strong className="text-gray-800 font-semibold">Live Transcript:</strong> {transcript || 'No live transcript available'}
               </div>
             </div>
           </>

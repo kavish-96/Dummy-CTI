@@ -1,56 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  
-  /* Modern Professional Softphone Color Palette */
-  --bg-app: transparent;
-  --bg-card: #ffffff;
-  --bg-surface: #f8f9fa;
-  --bg-surface-hover: #f1f3f5;
-  
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --text-inverse: #ffffff;
-  
-  --border-light: #e5e7eb;
-  
-  /* Muted Action Colors */
-  --brand-primary: #0f172a; /* Deep Navy */
-  --brand-primary-hover: #1e293b;
-  
-  --action-call: #059669; /* Elegant Emerald Green */
-  --action-call-hover: #047857;
-  
-  --action-end: #dc2626; /* Elegant Red */
-  --action-end-hover: #b91c1c;
-  
-  --action-neutral: #64748b; /* Slate Gray */
-  --action-neutral-hover: #475569;
-  
-  --action-warn: #d97706; /* Muted Amber */
-  --action-warn-hover: #b45309;
-
-  --action-info: #0284c7; /* Muted Blue */
-  --action-info-hover: #0369a1;
-
-  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
-  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.02);
-  --radius-card: 16px;
-  --radius-btn: 10px;
-  --radius-circle: 50%;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-primary);
-  background-color: var(--bg-app);
-  color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
+@layer base {
+  body {
+    @apply m-0 p-0 font-sans antialiased bg-transparent text-gray-800;
+  }
 }
