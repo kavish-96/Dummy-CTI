@@ -44,6 +44,17 @@ class ClickToCallData(BaseModel):
 class ScreenPopIncidentData(BaseModel):
     incident_id: str
 
+
+class CreateIncidentData(BaseModel):
+    caller_phone: str | None = None
+    short_description: str
+    description: str | None = ""
+    category: str | None = "inquiry"
+    subcategory: str | None = "phone"
+    impact: str | None = "2"
+    urgency: str | None = "2"
+
+
 # Store connected clients
 connected_clients: list[WebSocket] = []
 
@@ -115,6 +126,56 @@ def lookup_servicenow_incident(ticket_id: str):
     except Exception as e:
         print("Incident lookup failed:", e)
         return None
+
+
+
+def create_servicenow_incident(data: CreateIncidentData):
+    try:
+        caller_sys_id = None
+
+        if data.caller_phone:
+            caller_sys_id = lookup_servicenow_contact(data.caller_phone)
+
+        payload = {
+            "short_description": data.short_description,
+            "description": data.description,
+            "category": data.category,
+            "subcategory": data.subcategory,
+            "impact": data.impact,
+            "urgency": data.urgency,
+        }
+
+        # Add caller only if found
+        if caller_sys_id:
+            payload["caller_id"] = caller_sys_id
+
+        response = requests.post(
+            f"{SERVICENOW_INSTANCE}/api/now/table/incident",
+            auth=(SERVICENOW_USERNAME, SERVICENOW_PASSWORD),
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            json=payload,
+        )
+
+        response.raise_for_status()
+
+        result = response.json()["result"]
+
+        return {
+            "success": True,
+            "sys_id": result["sys_id"],
+            "number": result["number"],
+        }
+
+    except Exception as e:
+        print("Incident creation failed:", e)
+
+        return {
+            "success": False,
+            "error": str(e),
+        }
 
 
 
@@ -204,13 +265,13 @@ async def screen_pop_incident(
 @app.post("/incoming-call")
 async def incoming_call(data: CallData):
     """Incoming Call API"""
-    # contact_sys_id = lookup_servicenow_contact(
-    #     data.phone
-    # )
-
-    incident_sys_id = lookup_servicenow_incident(
-        data.ticket_id
+    contact_sys_id = lookup_servicenow_contact(
+        data.phone
     )
+
+    # incident_sys_id = lookup_servicenow_incident(
+    #     data.ticket_id
+    # )
 
     message = {
         "type": "incoming_call",
@@ -218,8 +279,8 @@ async def incoming_call(data: CallData):
         "customer_name": data.customer_name,
         "phone": data.phone,
         "ticket_id": data.ticket_id,
-        # "contact_sys_id": contact_sys_id
-        "incident_sys_id": incident_sys_id
+        "contact_sys_id": contact_sys_id
+        # "incident_sys_id": incident_sys_id
     }
     
     # Broadcast to all connected clients
@@ -252,6 +313,25 @@ async def click_to_call(data: ClickToCallData):
 
     return {"status": "success"}
 
+
+@app.post("/incidents")
+async def create_incident(data: CreateIncidentData):
+
+    result = create_servicenow_incident(data)
+
+    if not result["success"]:
+        return result
+
+    return {
+        "success": True,
+        "incident": {
+            "number": result["number"],
+            "sys_id": result["sys_id"],
+            "url": f"{SERVICENOW_INSTANCE}/incident.do?sys_id={result['sys_id']}"
+        }
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8002)

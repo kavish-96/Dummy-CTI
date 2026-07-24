@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { callService } from './services/callService';
 import { siprtcService } from './services/siprtcService';
+import runtimeConfigService from './services/runtimeConfigService';
+
 
 function App() {
   // States: 'idle', 'incoming', 'connected', 'outbound_calling'
@@ -23,6 +25,18 @@ function App() {
   const [registrationStatus, setRegistrationStatus] = useState('connecting');
 
   const timerRef = useRef(null);
+
+  useEffect(() => {
+    (async () => {
+      await runtimeConfigService.initialize();
+    })();
+
+    window.runtimeConfigService = runtimeConfigService;
+
+    window.refreshRuntimeConfiguration = async () => {
+      return await runtimeConfigService.refresh();
+    };
+  }, []);
 
   // Initialize SDK on mount
   useEffect(() => {
@@ -153,12 +167,10 @@ function App() {
       );
 
       if (data.type === "screen_pop_incident") {
-
         window.openFrameAPI.openServiceNowForm({
           entity: "incident",
           query: `sys_id=${data.incident_sys_id}`
         });
-
       }
 
       if (data.type === 'incoming_call') {
@@ -184,44 +196,40 @@ function App() {
             "*"
           );
 
-          console.log("Salesforce message sent");
-
         } catch (e) {
           console.error("Salesforce postMessage failed", e);
         }
 
 
         if (
-          window.openFrameAPI &&
-          data.incident_sys_id
-          // data.contact_sys_id
+          window.openFrameAPI && data.contact_sys_id
+          // data.incident_sys_id
         ) {
-          try {
-            // console.log("SCREEN POP ATTEMPT", data.contact_sys_id);
+          if (!runtimeConfigService.isFeatureEnabled("screen_pop")) {
+            console.log("Screen Pop disabled by Portal");
+          } else {
+            try {
+              console.log("SCREEN POP ATTEMPT", data.contact_sys_id);
+              // console.log("SCREEN POP ATTEMPT", data.incident_sys_id);
+              console.log(
+                "openFrameAPI object",
+                window.openFrameAPI
+              );
 
-            console.log("SCREEN POP ATTEMPT", data.incident_sys_id);
-            console.log(
-              "openFrameAPI object",
-              window.openFrameAPI
-            );
+              console.log("Calling openServiceNowForm...");
 
-            console.log(
-              "openServiceNowForm",
-              window.openFrameAPI.openServiceNowForm
-            );
+              window.openFrameAPI.openServiceNowForm({
+                entity: "customer_contact",
+                query: `sys_id=${data.contact_sys_id}`
+                // entity: "incident",
+                // query: `sys_id=${data.incident_sys_id}`
+              });
 
-            window.openFrameAPI.openServiceNowForm({
-              // entity: "customer_contact",
-              // query: `sys_id=${data.contact_sys_id}`
-              entity: "incident",
-              query: `sys_id=${data.incident_sys_id}`
+              console.log("openServiceNowForm finished");
 
-            });
-
-            console.log("openServiceNowForm called");
-
-          } catch (err) {
-            console.error("SCREEN POP ERROR", err);
+            } catch (err) {
+              console.error("SCREEN POP ERROR", err);
+            }
           }
         }
 
@@ -236,6 +244,11 @@ function App() {
           resetCall();
         }
       } else if (data.type === 'dial_call') {
+        if (!runtimeConfigService.isFeatureEnabled("click_to_call")) {
+          console.log("Click-to-Call disabled by Portal");
+          return;
+        }
+
         console.log("Click-to-call event received", data);
 
         try {
