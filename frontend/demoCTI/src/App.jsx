@@ -20,8 +20,8 @@ function App() {
   // const [sipPassword, setSipPassword] = useState('');
   // const [sipUsername, setSipUsername] = useState('sip:SIP1781071339415@phone.dev.r1.scb-global.com');
   // const [sipPassword, setSipPassword] = useState('Aneri@1234');
-  const sipUsername = 'sip:SIP1782131820832@phone.dev.r1.scb-global.com';
-  const sipPassword = '6975680373';
+  const sipUsername = 'sip:SIP1784621849828@phone.dev.r1.scb-global.com';
+  const sipPassword = '0543232706';
   const [registrationStatus, setRegistrationStatus] = useState('connecting');
 
   const timerRef = useRef(null);

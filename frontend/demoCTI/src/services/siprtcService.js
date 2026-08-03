@@ -62,7 +62,9 @@ class SipRTCService {
       app_secret: "4OkP6h1NENKOcEv3ZMxz4XfMBhJLAukStz72NGgt",
       base_url: "https://api.dev.r1.scb-global.com",
       taskrouter_url: "https://taskrouter.dev.r1.scb-global.com",
-      worker_id: "WK606E5036BE4D4402924FE7C4F3471FE3",
+
+      worker_id: "WKF760256A62C24006AE5563FCFB3B72D1",
+
       workspace_id: "WSBA0A49A999774C7EBE0A775D6DB655B5",
       available_activity: "WAC7BD94C475B54D91AD079A2774FF7776",
       unavailable_activity: "WA2FB41115EB224FCCA845D8F601D21A37",

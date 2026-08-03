@@ -135,6 +135,7 @@ def create_servicenow_incident(data: CreateIncidentData):
 
         if data.caller_phone:
             caller_sys_id = lookup_servicenow_contact(data.caller_phone)
+            print("Caller lookup result:", caller_sys_id)
 
         payload = {
             "short_description": data.short_description,
