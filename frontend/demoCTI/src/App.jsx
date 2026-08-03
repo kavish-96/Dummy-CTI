@@ -3,17 +3,28 @@ import React, { useState, useEffect, useRef } from 'react';
 import { callService } from './services/callService';
 import { siprtcService } from './services/siprtcService';
 import runtimeConfigService from './services/runtimeConfigService';
+import { servicenowCRM } from './crm/servicenow';
+import { zohoCRM } from './crm/zoho';
+
+let crm = servicenowCRM;
+
+if (window.ZOHO?.embeddedApp) {
+  crm = zohoCRM;
+} else if (window.openFrameAPI) {
+  crm = servicenowCRM;
+}
 
 
 function App() {
-  // States: 'idle', 'incoming', 'connected', 'outbound_calling'
-  const [callStatus, setCallStatus] = useState('idle');
+  // States: 'idle', 'incoming', 'connected', 'outbound_calling', 'loading_contact'
+  const [callStatus, setCallStatus] = useState(crm === zohoCRM ? 'loading_contact' : 'idle');
   const [currentCall, setCurrentCall] = useState(null);
   const [callDuration, setCallDuration] = useState(0);
   const [dialNumber, setDialNumber] = useState('');
   const [agentState, setAgentState] = useState('');
   const [ongoingCallInfo, setOngoingCallInfo] = useState('');
   const [transcript, setTranscript] = useState('');
+  const [pendingAutoDial, setPendingAutoDial] = useState(null);
 
   // SIP Registration States
   // const [sipUsername, setSipUsername] = useState('');
@@ -29,6 +40,27 @@ function App() {
   useEffect(() => {
     (async () => {
       await runtimeConfigService.initialize();
+      await crm.initialize();
+
+      if (crm === zohoCRM) {
+        // Wait briefly to ensure Zoho PageLoad event has fired
+        setTimeout(async () => {
+          const contactData = await crm.getCurrentContactPhone();
+          if (contactData && contactData.phone) {
+            console.log("Auto-dial pending for:", contactData.phone);
+            
+            // Pre-populate call details so the dialing screen has the name and number
+            setCurrentCall({
+              phone: contactData.phone,
+              customer_name: contactData.contactName
+            });
+            
+            setPendingAutoDial(contactData);
+          } else {
+            setCallStatus('idle');
+          }
+        }, 2000);
+      }
     })();
 
     window.runtimeConfigService = runtimeConfigService;
@@ -37,6 +69,16 @@ function App() {
       return await runtimeConfigService.refresh();
     };
   }, []);
+
+  useEffect(() => {
+    if (pendingAutoDial && registrationStatus === 'registered') {
+      console.log("SIP registered. Triggering auto-dial for Zoho contact...");
+      if (window.startOutboundCall) {
+        window.startOutboundCall(pendingAutoDial.phone, pendingAutoDial.contactName);
+      }
+      setPendingAutoDial(null); // Ensure we only dial once
+    }
+  }, [pendingAutoDial, registrationStatus]);
 
   // Initialize SDK on mount
   useEffect(() => {
@@ -98,13 +140,13 @@ function App() {
         case 'ringing':
           setCallStatus('outbound_calling');
           if (event && event.remoteuser) {
-            setCurrentCall({ phone: event.remoteuser });
+            setCurrentCall(prev => ({ ...prev, phone: event.remoteuser }));
           }
           break;
         case 'incomingcall':
           setCallStatus('incoming');
           if (event && event.remoteuser) {
-            setCurrentCall({ phone: event.remoteuser });
+            setCurrentCall(prev => ({ ...prev, phone: event.remoteuser }));
           }
           break;
         case 'confirmed':
@@ -166,12 +208,14 @@ function App() {
         data.build
       );
 
-      if (data.type === "screen_pop_incident") {
-        window.openFrameAPI.openServiceNowForm({
-          entity: "incident",
-          query: `sys_id=${data.incident_sys_id}`
-        });
-      }
+      // if (data.type === "screen_pop_incident") {
+      //   window.openFrameAPI.openServiceNowForm({
+      //     entity: "incident",
+      //     query: `sys_id=${data.incident_sys_id}`
+      //   });
+      // }
+
+      crm.openIncident(data.incident_sys_id);
 
       if (data.type === 'incoming_call') {
 
@@ -203,30 +247,14 @@ function App() {
 
         if (
           window.openFrameAPI && data.contact_sys_id
-          // data.incident_sys_id
         ) {
           if (!runtimeConfigService.isFeatureEnabled("screen_pop")) {
             console.log("Screen Pop disabled by Portal");
           } else {
             try {
               console.log("SCREEN POP ATTEMPT", data.contact_sys_id);
-              // console.log("SCREEN POP ATTEMPT", data.incident_sys_id);
-              console.log(
-                "openFrameAPI object",
-                window.openFrameAPI
-              );
-
-              console.log("Calling openServiceNowForm...");
-
-              window.openFrameAPI.openServiceNowForm({
-                entity: "customer_contact",
-                query: `sys_id=${data.contact_sys_id}`
-                // entity: "incident",
-                // query: `sys_id=${data.incident_sys_id}`
-              });
-
+              crm.openContact(data.contact_sys_id);
               console.log("openServiceNowForm finished");
-
             } catch (err) {
               console.error("SCREEN POP ERROR", err);
             }
@@ -252,20 +280,12 @@ function App() {
         console.log("Click-to-call event received", data);
 
         try {
-
-          if (window.openFrameAPI) {
-
-            window.openFrameAPI.show();
-
-          }
-
+          crm.showDialer();
         } catch (err) {
-
           console.error(
             "Failed to open CTI",
             err
           );
-
         }
 
         setCallStatus('outbound_calling');
@@ -415,11 +435,13 @@ function App() {
           <>
             {/* Status Badge */}
             <div className={`inline-block px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider self-center mb-2 ${callStatus === 'idle' ? 'bg-gray-100 text-gray-500 border border-gray-200' :
+              callStatus === 'loading_contact' ? 'bg-sky-100 text-sky-800 animate-pulse' :
               callStatus === 'incoming' ? 'bg-yellow-100 text-yellow-800 animate-pulse' :
                 callStatus === 'connected' ? 'bg-emerald-100 text-emerald-800' :
                   'bg-sky-100 text-sky-800 animate-pulse'
               }`}>
               {callStatus === 'idle' && 'Idle'}
+              {callStatus === 'loading_contact' && 'Preparing Call...'}
               {callStatus === 'incoming' && 'Incoming Call'}
               {callStatus === 'connected' && 'Connected'}
               {callStatus === 'outbound_calling' && 'Calling...'}
@@ -447,6 +469,14 @@ function App() {
                     <button className="py-3.5 px-0 rounded-full border-none font-bold relative transition-all duration-[50ms] text-white flex items-center justify-center gap-1.5 hover:brightness-105 active:translate-y-[3px] bg-slate-600 shadow-[0_4px_0_#475569,0_4px_8px_rgba(100,116,139,0.15)] active:shadow-[0_1px_0_#475569,0_1px_3px_rgba(100,116,139,0.1)]" onClick={handleDialClear}>✕</button>
                   </div>
                 </div>
+              </div>
+            ) : callStatus === 'loading_contact' ? (
+              <div className="text-center mb-4 p-8 bg-gray-50 rounded-lg border border-gray-200 flex flex-col items-center justify-center min-h-[200px]">
+                 <svg className="animate-spin h-8 w-8 text-sky-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                 </svg>
+                 <h2 className="text-lg font-semibold m-0 text-gray-600">Preparing Call...</h2>
               </div>
             ) : (
               <div className="text-center mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
